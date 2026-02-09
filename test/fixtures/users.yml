@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  country_code: MyString
+  phone_number: MyString
+  otp: MyString
+  otp_sent_at: 2026-02-04 16:38:41
+
+two:
+  country_code: MyString
+  phone_number: MyString
+  otp: MyString
+  otp_sent_at: 2026-02-04 16:38:41
