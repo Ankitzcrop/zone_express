@@ -34,4 +34,36 @@ Rails.application.routes.draw do
       end
     end
   end
+  namespace :api do
+    namespace :v1 do
+      resources :packages, only: [] do
+        collection do
+          get :filters
+          post :save_package
+        end
+      end
+    end
+  end
+  namespace :api do
+    namespace :v1 do
+      resources :orders do
+        member do
+          post :add_package
+          post :add_schedule
+          post :select_delivery_type
+          post :apply_promo
+          get  :summary
+          post :confirm
+        end
+      end
+    end
+  end
+  namespace :api do
+    namespace :v1 do
+
+      resources :delivery_types, only: [:create, :index]
+      resources :promo_codes, only: [:create, :index]
+
+    end
+  end
 end
