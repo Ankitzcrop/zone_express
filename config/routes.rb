@@ -16,8 +16,22 @@ Rails.application.routes.draw do
       post 'send_otp', to: 'auth#send_otp'
       post 'verify_otp', to: 'auth#verify_otp'
       resource :profile, only: [:show, :update]
-      resources :addresses, only: [:create, :index]
+      resources :addresses do
+        collection do
+          get :delivery_addresses
+        end
+      end
       get 'home', to: 'home#index'
+    end
+  end
+  namespace :api do
+    namespace :v1 do
+      resources :schedules, only: [] do
+        collection do
+          get :available_dates
+          post :book_pickup
+        end
+      end
     end
   end
 end
