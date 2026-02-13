@@ -9,8 +9,23 @@ class Api::V1::OrdersController < ApplicationController
 
   # 1️⃣ Create Draft Order
   def create
+    missing_fields = []
+
+    missing_fields << "user_id" unless params[:user_id].present?
+    missing_fields << "pickup_address_id" unless params[:pickup_address_id].present?
+    missing_fields << "delivery_address_id" unless params[:delivery_address_id].present?
+
+    if missing_fields.any?
+      return render json: {
+        success: false,
+        message: "#{missing_fields.join(', ')} is required"
+      }, status: :unprocessable_entity
+    end
+
     order = Order.new(
       user_id: params[:user_id],
+      pickup_address_id: params[:pickup_address_id],
+      delivery_address_id: params[:delivery_address_id],
       status: :draft
     )
 
@@ -18,14 +33,13 @@ class Api::V1::OrdersController < ApplicationController
       render json: {
         success: true,
         message: "Order created successfully",
-        order_id: order.id,
-        tracking_id: order.tracking_id
+        order_id: order.id
       }
     else
       render json: {
         success: false,
         errors: order.errors.full_messages
-      }, status: :unprocessable_entity
+      }
     end
   end
 
@@ -85,6 +99,13 @@ class Api::V1::OrdersController < ApplicationController
     render json: {
       success: true,
       tracking_id: @order.tracking_id,
+      pickup_address: @order.pickup_address&.slice(
+        :id, :name, :mobile, :flat, :area, :city, :state, :pincode, :label
+      ),
+
+      delivery_address: @order.delivery_address&.slice(
+        :id, :name, :mobile, :flat, :area, :city, :state, :pincode, :label
+      ),
       pickup_date: @order.pickup_date,
       pickup_time: @order.pickup_time,
       package_type: @order.package_type,

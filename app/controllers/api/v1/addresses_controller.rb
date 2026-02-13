@@ -9,7 +9,7 @@ class Api::V1::AddressesController < ApplicationController
     if address.save
       render json: {
         success: true,
-        message: "#{address.address_type.capitalize} address saved successfully",
+        message: "#{address.address_type.to_s.capitalize} address saved successfully",
         data: address
       }
     else

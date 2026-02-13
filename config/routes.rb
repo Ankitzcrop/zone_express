@@ -51,6 +51,7 @@ Rails.application.routes.draw do
           post :add_package
           post :add_schedule
           post :select_delivery_type
+          post :select_addresses
           post :apply_promo
           get  :summary
           post :confirm
