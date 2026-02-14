@@ -7,13 +7,25 @@ class Api::V1::OrdersController < ApplicationController
     :confirm
   ]
 
+  def show
+    order = Order.find_by(id: params[:id])
+
+    if order
+      render json: { success: true, order: order }
+    else
+      render json: { success: false, message: "Order not found" }
+    end
+  end
+
   # 1️⃣ Create Draft Order
   def create
     missing_fields = []
 
     missing_fields << "user_id" unless params[:user_id].present?
+    missing_fields << "receiver_id" unless params[:receiver_id].present?
     missing_fields << "pickup_address_id" unless params[:pickup_address_id].present?
     missing_fields << "delivery_address_id" unless params[:delivery_address_id].present?
+    missing_fields << "service_id" unless params[:service_id].present?
 
     if missing_fields.any?
       return render json: {
@@ -24,8 +36,11 @@ class Api::V1::OrdersController < ApplicationController
 
     order = Order.new(
       user_id: params[:user_id],
+      receiver_id: params[:receiver_id],
       pickup_address_id: params[:pickup_address_id],
       delivery_address_id: params[:delivery_address_id],
+      service_id: params[:service_id],
+      tracking_id: "ZX#{SecureRandom.hex(4).upcase}",
       status: :draft
     )
 
@@ -33,7 +48,8 @@ class Api::V1::OrdersController < ApplicationController
       render json: {
         success: true,
         message: "Order created successfully",
-        order_id: order.id
+        order_id: order.id,
+        tracking_id: order.tracking_id
       }
     else
       render json: {
@@ -41,6 +57,32 @@ class Api::V1::OrdersController < ApplicationController
         errors: order.errors.full_messages
       }
     end
+  end
+
+  def my_orders
+    user_id = params[:user_id]
+
+    # Base query (type ke hisaab se)
+    case params[:type]
+    when "from_me"
+      orders = Order.where(user_id: user_id)
+    when "to_me"
+      orders = Order.where(receiver_id: user_id)
+    else
+      orders = Order.where(user_id: user_id)
+    end
+
+    # Category filter
+    if params[:category].present?
+      service = Service.find_by("LOWER(name) = ?", params[:category].downcase)
+      orders = orders.where(service_id: service.id) if service
+    end
+
+    render json: {
+      success: true,
+      total_orders: orders.count,
+      orders: orders.order(created_at: :desc)
+    }
   end
 
   # 4️⃣ Select Delivery Type

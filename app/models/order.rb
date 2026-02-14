@@ -2,11 +2,13 @@ class Order < ApplicationRecord
   belongs_to :user
   belongs_to :delivery_type, optional: true
   belongs_to :promo_code, optional: true
+  belongs_to :service
   # validates :package_type, presence: true
   # validates :package_size, presence: true
   before_create :generate_tracking_id
   belongs_to :pickup_address, class_name: "Address", optional: true
   belongs_to :delivery_address, class_name: "Address", optional: true
+  belongs_to :receiver, class_name: "User", optional: true
   enum :status, {
     draft: 0,
     package_added: 1,

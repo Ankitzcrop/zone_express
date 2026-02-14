@@ -47,6 +47,9 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :orders do
+        collection do
+          get :my_orders
+        end
         member do
           post :add_package
           post :add_schedule
@@ -65,6 +68,11 @@ Rails.application.routes.draw do
       resources :delivery_types, only: [:create, :index]
       resources :promo_codes, only: [:create, :index]
 
+    end
+  end
+  namespace :api do
+    namespace :v1 do
+      resources :services, only: [:index, :create, :show, :update, :destroy]
     end
   end
 end
