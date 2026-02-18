@@ -36,7 +36,7 @@ class Api::V1::PackagesController < ApplicationController
       data: orders
     }
   end
-
+  
   private
 
   def package_params
@@ -44,6 +44,10 @@ class Api::V1::PackagesController < ApplicationController
       :package_type,
       :package_size,
       :package_value,
+      :length,
+      :breadth,
+      :height,
+      :weight,
       package_contents: []
     )
   end
