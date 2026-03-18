@@ -49,6 +49,7 @@ Rails.application.routes.draw do
       resources :orders do
         collection do
           get :my_orders
+          get :all_orders
         end
         member do
           post :add_package

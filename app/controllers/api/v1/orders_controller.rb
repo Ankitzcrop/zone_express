@@ -173,6 +173,43 @@ class Api::V1::OrdersController < ApplicationController
     }
   end
 
+  def all_orders
+    orders = Order.includes(:user, :receiver, :pickup_address, :delivery_address, :service)
+                  .order(created_at: :desc)
+
+    # Optional category filter
+    if params[:category].present?
+      service = Service.find_by("LOWER(name) = ?", params[:category].downcase)
+      orders = service.present? ? orders.where(service_id: service.id) : orders.none
+    end
+
+    render json: {
+      success: true,
+      total_orders: orders.count,
+      orders: orders.as_json(
+        only: [
+          :id, :user_id, :receiver_id, :pickup_address_id, :delivery_address_id,
+          :service_id, :tracking_id, :status, :total_amount, :created_at, :updated_at,
+          :pickup_date, :pickup_time, :package_type, :package_size, :package_value,
+          :package_contents, :delivery_type_id, :promo_code_id, :length, :breadth,
+          :height, :weight
+        ],
+        methods: [:service_category],
+        include: {
+          user: { only: [:id, :name, :email, :mobile] },
+          receiver: { only: [:id, :name, :mobile] },
+          pickup_address: {
+            only: [:id, :name, :mobile, :flat, :area, :city, :state, :pincode, :label]
+          },
+          delivery_address: {
+            only: [:id, :name, :mobile, :flat, :area, :city, :state, :pincode, :label]
+          },
+          service: { only: [:id, :name] }
+        }
+      )
+    }, status: :ok
+  end
+
   private
 
   def set_order
