@@ -22,10 +22,8 @@ class Api::V1::OrdersController < ApplicationController
     missing_fields = []
 
     missing_fields << "user_id" unless params[:user_id].present?
-    missing_fields << "receiver_id" unless params[:receiver_id].present?
     missing_fields << "pickup_address_id" unless params[:pickup_address_id].present?
     missing_fields << "delivery_address_id" unless params[:delivery_address_id].present?
-    missing_fields << "service_id" unless params[:service_id].present?
 
     if missing_fields.any?
       return render json: {
@@ -34,14 +32,27 @@ class Api::V1::OrdersController < ApplicationController
       }, status: :unprocessable_entity
     end
 
+    pickup_address = Address.find_by(id: params[:pickup_address_id])
+    delivery_address = Address.find_by(id: params[:delivery_address_id])
+
+    unless pickup_address && delivery_address
+      return render json: {
+        success: false,
+        message: "Pickup or delivery address not found"
+      }, status: :not_found
+    end
+
+    distance = calculate_distance(pickup_address, delivery_address)
+    driver_amount = calculate_driver_amount(distance)
+
     order = Order.new(
       user_id: params[:user_id],
-      receiver_id: params[:receiver_id],
       pickup_address_id: params[:pickup_address_id],
       delivery_address_id: params[:delivery_address_id],
-      service_id: params[:service_id],
       tracking_id: "ZX#{SecureRandom.hex(4).upcase}",
-      status: :draft
+      status: :draft,
+      distance: distance,
+      driver_amount: driver_amount
     )
 
     if order.save
@@ -49,13 +60,15 @@ class Api::V1::OrdersController < ApplicationController
         success: true,
         message: "Order created successfully",
         order_id: order.id,
-        tracking_id: order.tracking_id
+        tracking_id: order.tracking_id,
+        distance: order.distance,
+        driver_amount: order.driver_amount
       }
     else
       render json: {
         success: false,
         errors: order.errors.full_messages
-      }
+      }, status: :unprocessable_entity
     end
   end
 
@@ -229,5 +242,27 @@ class Api::V1::OrdersController < ApplicationController
     return 0 unless order.promo_code
 
     (order.delivery_type.price * order.promo_code.discount_percentage) / 100
+  end
+
+  def calculate_distance(pickup_address, delivery_address)
+    return nil unless pickup_address.latitude.present? &&
+                      pickup_address.longitude.present? &&
+                      delivery_address.latitude.present? &&
+                      delivery_address.longitude.present?
+
+    Geocoder::Calculations.distance_between(
+      [pickup_address.latitude, pickup_address.longitude],
+      [delivery_address.latitude, delivery_address.longitude],
+      units: :km
+    ).round(2)
+  end
+
+  def calculate_driver_amount(distance)
+    return 0 unless distance.present?
+
+    base_fare = 40
+    per_km_rate = 12
+
+    (base_fare + (distance * per_km_rate)).round(2)
   end
 end

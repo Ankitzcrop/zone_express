@@ -2,7 +2,7 @@ class Order < ApplicationRecord
   belongs_to :user
   belongs_to :delivery_type, optional: true
   belongs_to :promo_code, optional: true
-  belongs_to :service
+  belongs_to :service, optional: true
   # validates :package_type, presence: true
   # validates :package_size, presence: true
   before_create :generate_tracking_id
