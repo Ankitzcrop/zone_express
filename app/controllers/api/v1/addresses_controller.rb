@@ -4,19 +4,70 @@ class Api::V1::AddressesController < ApplicationController
 
   # Create Pickup OR Delivery
   def create
-    address = @user.addresses.new(address_params)
+    @address = @user.addresses.new(address_params)
 
-    if address.save
+    full_address = [
+      @address.flat,
+      @address.area,
+      @address.city,
+      @address.state,
+      @address.pincode,
+      "India"
+    ].compact.reject(&:blank?).join(", ")
+
+    fallback_address = [
+      @address.area,
+      @address.city,
+      @address.state,
+      @address.pincode,
+      "India"
+    ].compact.reject(&:blank?).join(", ")
+
+    Rails.logger.info "FULL ADDRESS => #{full_address}"
+    Rails.logger.info "FALLBACK ADDRESS => #{fallback_address}"
+
+    result = Geocoder.search(full_address).first
+
+    if result.blank?
+      Rails.logger.info "Full address geocoding failed, trying fallback..."
+      result = Geocoder.search(fallback_address).first
+    end
+
+    Rails.logger.info "GEOCODER RESULT => #{result.inspect}"
+
+    if result.present?
+      @address.latitude = result.latitude
+      @address.longitude = result.longitude
+    else
+      @address.latitude = nil
+      @address.longitude = nil
+    end
+
+    if @address.save
       render json: {
         success: true,
-        message: "#{address.address_type.to_s.capitalize} address saved successfully",
-        data: address
-      }
+        message: "#{@address.address_type.capitalize} address saved successfully",
+        data: {
+          id: @address.id,
+          user_id: @address.user_id,
+          name: @address.name,
+          mobile: @address.mobile,
+          flat: @address.flat,
+          area: @address.area,
+          pincode: @address.pincode,
+          city: @address.city,
+          state: @address.state,
+          address_type: @address.address_type,
+          label: @address.label,
+          latitude: @address.latitude,
+          longitude: @address.longitude
+        }
+      }, status: :ok
     else
       render json: {
         success: false,
-        errors: address.errors.full_messages
-      }
+        errors: @address.errors.full_messages
+      }, status: :unprocessable_entity
     end
   end
 
@@ -37,14 +88,12 @@ class Api::V1::AddressesController < ApplicationController
   private
 
   def set_user
-    @user = User.find_by(id: params[:user_id])
-    unless @user
-      render json: { success: false, message: "User not found" }
-    end
+    @user = User.find_by(id: params[:address][:user_id])
+    render json: { success: false, message: "User not found" }, status: :not_found unless @user
   end
 
   def address_params
-    params.permit(
+    params.require(:address).permit(
       :name,
       :mobile,
       :flat,
@@ -52,8 +101,8 @@ class Api::V1::AddressesController < ApplicationController
       :pincode,
       :city,
       :state,
-      :address_type,  # pickup / delivery
-      :label,         # home / work / other
+      :address_type,
+      :label,
       :default
     )
   end
