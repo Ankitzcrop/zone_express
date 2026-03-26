@@ -205,7 +205,7 @@ class Api::V1::OrdersController < ApplicationController
           :service_id, :tracking_id, :status, :total_amount, :created_at, :updated_at,
           :pickup_date, :pickup_time, :package_type, :package_size, :package_value,
           :package_contents, :delivery_type_id, :promo_code_id, :length, :breadth,
-          :height, :weight
+          :height, :weight, :distance, :driver_amount
         ],
         methods: [:service_category],
         include: {
