@@ -212,10 +212,16 @@ class Api::V1::OrdersController < ApplicationController
           user: { only: [:id, :name, :email, :mobile] },
           receiver: { only: [:id, :name, :mobile] },
           pickup_address: {
-            only: [:id, :name, :mobile, :flat, :area, :city, :state, :pincode, :label]
+            only: [
+              :id, :name, :mobile, :flat, :area, :city, :state, :pincode, :label,
+              :latitude, :longitude
+            ]
           },
           delivery_address: {
-            only: [:id, :name, :mobile, :flat, :area, :city, :state, :pincode, :label]
+            only: [
+              :id, :name, :mobile, :flat, :area, :city, :state, :pincode, :label,
+              :latitude, :longitude
+            ]
           },
           service: { only: [:id, :name] }
         }
