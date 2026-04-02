@@ -13,7 +13,9 @@ class Order < ApplicationRecord
     draft: 0,
     package_added: 1,
     scheduled: 2,
-    confirmed: 3
+    confirmed: 3,
+    accepted: 4,
+    rejected: 5
   }
 
   def calculate_total
