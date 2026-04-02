@@ -229,6 +229,47 @@ class Api::V1::OrdersController < ApplicationController
     }, status: :ok
   end
 
+  def accept_request
+    order = Order.find_by(id: params[:id])
+
+    unless order.present?
+      return render json: {
+        success: false,
+        message: "Order not found"
+      }, status: :not_found
+    end
+
+    if order.status == "accepted"
+      return render json: {
+        success: false,
+        message: "This order is already accepted"
+      }, status: :unprocessable_entity
+    end
+
+    update_data = { status: "accepted" }
+
+    # optional columns only if present
+    update_data[:agent_id] = params[:agent_id] if order.attributes.key?("agent_id")
+    update_data[:accepted_at] = Time.current if order.attributes.key?("accepted_at")
+
+    if order.update(update_data)
+      render json: {
+        success: true,
+        message: "Order accepted successfully",
+        data: {
+          order_id: order.id,
+          agent_id: params[:agent_id],
+          status: order.status
+        }
+      }, status: :ok
+    else
+      render json: {
+        success: false,
+        message: order.errors.full_messages.join(", ")
+      }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def set_order

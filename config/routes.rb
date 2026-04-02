@@ -52,6 +52,9 @@ Rails.application.routes.draw do
           get :all_orders
         end
         member do
+          post :accept_request
+        end
+        member do
           post :add_package
           post :add_schedule
           post :select_delivery_type
