@@ -239,6 +239,13 @@ class Api::V1::OrdersController < ApplicationController
       }, status: :not_found
     end
 
+    if params[:agent_id].blank?
+      return render json: {
+        success: false,
+        message: "agent_id is required"
+      }, status: :unprocessable_entity
+    end
+
     if order.status == "accepted"
       return render json: {
         success: false,
@@ -246,10 +253,18 @@ class Api::V1::OrdersController < ApplicationController
       }, status: :unprocessable_entity
     end
 
-    update_data = { status: "accepted" }
+    if order.status == "rejected"
+      return render json: {
+        success: false,
+        message: "This order has already been rejected"
+      }, status: :unprocessable_entity
+    end
 
-    # optional columns only if present
-    update_data[:agent_id] = params[:agent_id] if order.attributes.key?("agent_id")
+    update_data = {
+      status: "accepted",
+      agent_id: params[:agent_id]
+    }
+
     update_data[:accepted_at] = Time.current if order.attributes.key?("accepted_at")
 
     if order.update(update_data)
@@ -258,8 +273,66 @@ class Api::V1::OrdersController < ApplicationController
         message: "Order accepted successfully",
         data: {
           order_id: order.id,
-          agent_id: params[:agent_id],
-          status: order.status
+          agent_id: order.agent_id,
+          status: order.status,
+          accepted_at: order.accepted_at
+        }
+      }, status: :ok
+    else
+      render json: {
+        success: false,
+        message: order.errors.full_messages.join(", ")
+      }, status: :unprocessable_entity
+    end
+  end
+
+  def reject_request
+    order = Order.find_by(id: params[:id])
+
+    unless order.present?
+      return render json: {
+        success: false,
+        message: "Order not found"
+      }, status: :not_found
+    end
+
+    if params[:agent_id].blank?
+      return render json: {
+        success: false,
+        message: "agent_id is required"
+      }, status: :unprocessable_entity
+    end
+
+    if order.status == "accepted"
+      return render json: {
+        success: false,
+        message: "This order is already accepted, so it cannot be rejected"
+      }, status: :unprocessable_entity
+    end
+
+    if order.status == "rejected"
+      return render json: {
+        success: false,
+        message: "This order is already rejected"
+      }, status: :unprocessable_entity
+    end
+
+    update_data = {
+      status: "rejected",
+      agent_id: params[:agent_id]
+    }
+
+    update_data[:rejected_at] = Time.current if order.attributes.key?("rejected_at")
+
+    if order.update(update_data)
+      render json: {
+        success: true,
+        message: "Order rejected successfully",
+        data: {
+          order_id: order.id,
+          agent_id: order.agent_id,
+          status: order.status,
+          rejected_at: order.rejected_at
         }
       }, status: :ok
     else
