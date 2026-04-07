@@ -7,4 +7,11 @@ class User < ApplicationRecord
   }
   has_many :addresses
   has_many :orders
+  has_many :support_tickets, dependent: :destroy
+
+  def initials
+    return "" if name.blank?
+
+    name.split.map(&:first).join.upcase.first(2)
+  end
 end

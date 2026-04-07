@@ -73,9 +73,12 @@ Rails.application.routes.draw do
 
     end
   end
+
   namespace :api do
     namespace :v1 do
       resources :services, only: [:index, :create, :show, :update, :destroy]
+      resources :support_tickets, only: [:index, :show, :create, :update, :destroy]
     end
   end
+
 end
