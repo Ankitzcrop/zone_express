@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Verify OTP</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      display: flex;
+      height: 100vh;
+      background: #f5f5f5;
+    }
+
+    /* LEFT SIDE */
+    .left {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f5f5f5;
+      position: relative;
+    }
+
+    /* CENTER DIVIDER */
+    .left::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      width: 1px;
+      background: #ddd;
+    }
+
+    .left img {
+      width: 320px;
+      background: transparent; /* important */
+      mix-blend-mode: multiply; /* removes white feel */
+    }
+
+    /* RIGHT SIDE */
+    .right {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #fff;
+    }
+
+    .form-box {
+      width: 350px;
+      text-align: center;
+    }
+
+    h2 {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 25px;
+    }
+
+    /* OTP */
+    .otp-inputs {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .otp-inputs input {
+      width: 55px;
+      height: 55px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+      font-size: 20px;
+      outline: none;
+    }
+
+    .otp-inputs input:focus {
+      border-color: #ffd400;
+    }
+
+    /* BUTTON */
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: #ffd400;
+      border: none;
+      margin-top: 25px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* RESEND */
+    .resend {
+      margin-top: 15px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .resend a {
+      font-weight: bold;
+      text-decoration: none;
+      color: black;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- LEFT -->
+  <div class="left">
+    <%= image_tag "Rectangle8.png" %>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+    <div class="form-box">
+      <h2>Verify OTP</h2>
+      <p>Enter the OTP sent to your mobile number</p>
+
+      <%= form_with url: admin_verify_otp_path, method: :post do %>
+
+        <div class="otp-inputs">
+          <%= text_field_tag :otp1, nil, maxlength: 1 %>
+          <%= text_field_tag :otp2, nil, maxlength: 1 %>
+          <%= text_field_tag :otp3, nil, maxlength: 1 %>
+          <%= text_field_tag :otp4, nil, maxlength: 1 %>
+        </div>
+
+        <%= submit_tag "Verify", class: "submit-btn" %>
+
+      <% end %>
+
+      <div class="resend">
+        Didn’t receive code? <%= link_to "Resend", "#" %>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

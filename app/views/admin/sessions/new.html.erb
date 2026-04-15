@@ -1,0 +1,98 @@
+<!-- app/views/admin/sessions/new.html.erb -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Login</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      display: flex;
+      height: 100vh;
+    }
+
+    .left {
+      flex: 1;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .left img {
+      width: 400px;
+    }
+
+    .right {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .form-box {
+      width: 350px;
+    }
+
+    h2 {
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: #ffd400;
+      border: none;
+      margin-top: 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .forgot {
+      text-align: right;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LEFT IMAGE -->
+  <div class="left">
+    <%= image_tag "delivery_boy.png" %> <!-- image assets me daalo -->
+  </div>
+
+  <!-- RIGHT FORM -->
+  <div class="right">
+    <div class="form-box">
+      <h2>Hello, Welcome Back !</h2>
+      <p>Please Enter below details and login</p>
+
+      <%= form_with url: admin_login_path, method: :post do %>
+
+        <%= text_field_tag :phone_number, nil, placeholder: "Mobile Number" %>
+
+        <%= password_field_tag :password, nil, placeholder: "Password" %>
+
+        <div class="forgot">
+          <%= link_to "Forgot Password?", admin_forgot_password_path %>
+        </div>
+        <%= submit_tag "Let’s Login", class: "login-btn" %>
+
+      <% end %>
+    </div>
+  </div>
+
+</body>
+</html>

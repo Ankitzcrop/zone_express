@@ -24,6 +24,19 @@ Rails.application.routes.draw do
       get 'home', to: 'home#index'
     end
   end
+  namespace :admin do
+    resources :users
+    resources :orders
+    get "dashboard/index"
+    get 'login', to: 'sessions#new'
+    post 'login', to: 'sessions#create'
+    get  'forgot_password', to: 'sessions#forgot_password'
+    post 'send_otp', to: 'sessions#send_otp', as: :send_otp
+    get  'verify_otp', to: 'sessions#verify_otp'
+    post 'verify_otp', to: 'sessions#verify_otp_post'
+    get  'reset_password', to: 'sessions#reset_password'
+    post 'update_password', to: 'sessions#update_password'
+  end
   namespace :api do
     namespace :v1 do
       resources :schedules, only: [] do

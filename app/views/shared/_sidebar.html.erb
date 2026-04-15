@@ -1,0 +1,27 @@
+<div class="sidebar">
+  <div>
+    <div class="logo">
+      <%= image_tag "logo.png", alt: "Zone Express" %>
+    </div>
+
+    <hr />
+
+    <ul class="menu">
+      <li class="<%= 'active' if current_page?(admin_dashboard_index_path) %>">
+        <%= link_to "Dashboard", admin_dashboard_index_path %>
+      </li>
+      <li>My Finance</li>
+      <li>Driver Management</li>
+      <li class="<%= 'active' if current_page?(admin_orders_path) %>">
+        <%= link_to "All Order", admin_orders_path %>
+      </li>
+      <li>Badges & Achievements</li>
+      <li class="<%= 'active' if current_page?(admin_users_path) %>">
+        <%= link_to "User Management", admin_users_path %>
+      </li>
+      <li>Support</li>
+    </ul>
+  </div>
+
+  <div class="logout">Logout</div>
+</div>
