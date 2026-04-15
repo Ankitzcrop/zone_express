@@ -1,0 +1,81 @@
+<div class="dashboard-container">
+
+  <!-- Sidebar -->
+  <%= render 'shared/sidebar' %>
+
+  <!-- Main Content -->
+  <div class="main-content">
+
+    <!-- Header -->
+    <%= render 'shared/header' %>
+
+    <!-- Page Content -->
+    <div class="content-wrapper">
+
+      <!-- Page Heading -->
+      <div class="page-header">
+        <div class="header-top">
+          <h3>User Management</h3>
+
+          <div class="breadcrumb">
+            <span>Home</span> / <span class="active">User Management</span>
+          </div>
+        </div>
+
+        <p>You can view all of franchise here</p>
+
+      </div>
+
+      <!-- Table Card -->
+      <div class="table-card">
+
+        <!-- Table Top Bar (NOW INSIDE CARD) -->
+        <div class="table-header">
+          <h4>All Users</h4>
+
+          <div class="actions">
+            <div class="search-box">
+              <input type="text" placeholder="Search">
+              <span class="filter-icon">⚙️</span>
+            </div>
+
+            <%= link_to "Create New User", "#", class: "btn-primary" %>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <table>
+          <thead>
+            <tr>
+              <th><input type="checkbox"></th>
+              <th>User Name</th>
+              <th>Email</th>
+              <th>Password</th>
+              <th>Franchise Name</th>
+              <th>Role Assign</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @users.each_with_index do |user, index| %>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>#<%= index + 1 %> <%= user.name %></td>
+                <td><%= user.email %></td>
+                <td>************</td>
+                <td><%= user.name %></td>
+                <td><%= user.role %></td>
+                <td class="actions">
+                  <%= link_to "✏️", "#", class: "edit-btn" %>
+                  <%= link_to "🗑️", "#", method: :delete, data: { confirm: "Are you sure?" }, class: "delete-btn" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+</div>
