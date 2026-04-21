@@ -88,8 +88,13 @@ class Api::V1::AddressesController < ApplicationController
   private
 
   def set_user
-    @user = User.find_by(id: params[:address][:user_id])
-    render json: { success: false, message: "User not found" }, status: :not_found unless @user
+    user_id = params[:user_id] || params.dig(:address, :user_id)
+
+    return render json: { success: false, message: "User ID required" }, status: :unprocessable_entity if user_id.blank?
+
+    @user = User.find_by(id: user_id)
+
+    return render json: { success: false, message: "User not found" }, status: :not_found unless @user
   end
 
   def address_params
