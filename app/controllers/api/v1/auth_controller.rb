@@ -46,7 +46,7 @@ class Api::V1::AuthController < ApplicationController
   private
 
   def encode_token(payload)
-    payload[:exp] = 24.hours.from_now.to_i
+    payload[:exp] = 7.days.from_now.to_i
     JWT.encode(payload, Rails.application.secret_key_base, 'HS256')
   end
 end
