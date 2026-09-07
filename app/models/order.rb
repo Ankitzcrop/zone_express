@@ -15,7 +15,9 @@ class Order < ApplicationRecord
     scheduled: 2,
     confirmed: 3,
     accepted: 4,
-    rejected: 5
+    rejected: 5,
+    cancelled: 6,
+    reschedule: 7
   }
 
   def calculate_total

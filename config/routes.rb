@@ -47,6 +47,7 @@ Rails.application.routes.draw do
       end
     end
   end
+  
   namespace :api do
     namespace :v1 do
       resources :packages, only: [] do
@@ -57,6 +58,7 @@ Rails.application.routes.draw do
       end
     end
   end
+
   namespace :api do
     namespace :v1 do
       resources :orders do
@@ -74,10 +76,13 @@ Rails.application.routes.draw do
           post :apply_promo
           get  :summary
           post :confirm
+          post :cancel
+          post :reschedule
         end
       end
     end
   end
+
   namespace :api do
     namespace :v1 do
 
