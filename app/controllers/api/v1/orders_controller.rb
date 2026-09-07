@@ -343,6 +343,64 @@ class Api::V1::OrdersController < ApplicationController
     end
   end
 
+  def cancel
+    order = Order.find_by(id: params[:id])
+
+    unless order
+      return render json: {
+        success: false,
+        message: "Order not found"
+      }, status: :not_found
+    end
+
+    if params[:reason].blank?
+      return render json: {
+        success: false,
+        message: "Cancellation reason is required"
+      }, status: :unprocessable_entity
+    end
+
+    order.update!(
+      status: "cancelled",
+      cancellation_reason: params[:reason]
+    )
+
+    render json: {
+      success: true,
+      message: "Order cancelled successfully"
+    }, status: :ok
+  end
+
+  def reschedule
+    order = Order.find(params[:id])
+
+    if params[:new_date].blank?
+      return render json: {
+        success: false,
+        message: "new_date is required"
+      }, status: :unprocessable_entity
+    end
+
+    begin
+      new_date = Date.parse(params[:new_date])
+    rescue ArgumentError
+      return render json: {
+        success: false,
+        message: "Invalid date format. Please use YYYY-MM-DD"
+      }, status: :unprocessable_entity
+    end
+
+    order.update!(
+      rescheduled_date: new_date,
+      status: :scheduled
+    )
+
+    render json: {
+      success: true,
+      message: "Order rescheduled successfully"
+    }, status: :ok
+  end
+
   private
 
   def set_order
