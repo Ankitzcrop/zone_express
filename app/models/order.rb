@@ -9,6 +9,9 @@ class Order < ApplicationRecord
   belongs_to :pickup_address, class_name: "Address", optional: true
   belongs_to :delivery_address, class_name: "Address", optional: true
   belongs_to :receiver, class_name: "User", optional: true
+  has_many :order_trackings, dependent: :destroy
+  after_update :create_tracking_record, if: :saved_change_to_status?
+  
   enum :status, {
     draft: 0,
     package_added: 1,
@@ -17,7 +20,10 @@ class Order < ApplicationRecord
     accepted: 4,
     rejected: 5,
     cancelled: 6,
-    reschedule: 7
+    reschedule: 7,
+    picked_up: 8,
+    in_transit: 9,
+    delivered: 10
   }
 
   def calculate_total
@@ -37,5 +43,34 @@ class Order < ApplicationRecord
 
   def generate_tracking_id
     self.tracking_id = "ZX#{SecureRandom.hex(4).upcase}"
+  end
+
+  def create_tracking_record
+    tracking_status = map_tracking_status
+
+    return if tracking_status.blank?
+
+    order_trackings.create!(
+      status: tracking_status,
+      timestamp: Time.current,
+      note: "Order status updated to #{tracking_status.to_s.humanize}"
+    )
+  end
+
+  def map_tracking_status
+    case status
+    when "draft", "package_added", "scheduled", "confirmed", "accepted", "reschedule"
+      :booked
+    when "picked_up"
+      :picked_up
+    when "in_transit"
+      :in_transit
+    when "delivered"
+      :delivered
+    when "rejected", "cancelled"
+      :cancelled
+    else
+      nil
+    end
   end
 end

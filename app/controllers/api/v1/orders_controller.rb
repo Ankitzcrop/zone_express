@@ -401,7 +401,47 @@ class Api::V1::OrdersController < ApplicationController
     }, status: :ok
   end
 
+  def tracking
+    order = Order.find_by(id: params[:id])
+
+    unless order
+      return render json: {
+        success: false,
+        message: "Order not found"
+      }, status: :not_found
+    end
+
+    trackings = order.order_trackings.order(:timestamp)
+
+    current_tracking = trackings.last
+    courier = order.user
+
+    render json: {
+      success: true,
+      data: {
+        status: current_tracking&.status,
+
+        timeline: trackings.map do |tracking|
+          {
+            status: tracking.status,
+            timestamp: tracking.timestamp,
+            note: tracking.note
+          }
+        end,
+
+        courier_name: courier&.name,
+        courier_phone: mask_phone(courier&.phone_number)
+      }
+    }, status: :ok
+  end
+
   private
+   
+  def mask_phone(phone)
+    return nil if phone.blank?
+
+    "#{phone[0, 4]}****#{phone[-2, 2]}"
+  end
 
   def set_order
     @order = Order.find_by(id: params[:id])

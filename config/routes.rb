@@ -78,6 +78,7 @@ Rails.application.routes.draw do
           post :confirm
           post :cancel
           post :reschedule
+          get :tracking
         end
       end
     end
