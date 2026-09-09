@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  order: one
+  status: 1
+  timestamp: 2026-09-09 12:16:04
+  note: MyText
+
+two:
+  order: two
+  status: 1
+  timestamp: 2026-09-09 12:16:04
+  note: MyText
