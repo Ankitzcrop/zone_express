@@ -1,13 +1,21 @@
 class User < ApplicationRecord
+  has_secure_password
   validates :phone_number, presence: true
   validates :country_code, presence: true
   validates :phone_number, uniqueness: {
     scope: :country_code,
     message: "already exists"
   }
-  has_many :addresses
-  has_many :orders
+  has_many :addresses, dependent: :destroy
+  has_many :orders, dependent: :destroy
   has_many :support_tickets, dependent: :destroy
+  has_one :agent_profile, dependent: :destroy
+
+  enum :role, {
+    user: 0,
+    merchant: 1,
+    admin: 2
+  }
 
   def initials
     return "" if name.blank?

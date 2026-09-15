@@ -64,3 +64,4 @@ end
 gem 'pg', '~> 1.5'
 gem 'jwt'
 gem 'geocoder'
+gem "bcrypt", "~> 3.1"
