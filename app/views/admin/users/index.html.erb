@@ -1,81 +1,159 @@
 <div class="dashboard-container">
 
-  <!-- Sidebar -->
-  <%= render 'shared/sidebar' %>
+<%= render 'shared/sidebar' %>
 
-  <!-- Main Content -->
   <div class="main-content">
 
-    <!-- Header -->
-    <%= render 'shared/header' %>
+<%= render 'shared/header' %>
 
-    <!-- Page Content -->
-    <div class="content-wrapper">
+<div class="content-wrapper">
 
-      <!-- Page Heading -->
-      <div class="page-header">
-        <div class="header-top">
-          <h3>User Management</h3>
+  <div class="page-header">
+    <div class="header-top">
+      <h3>User Management</h3>
 
-          <div class="breadcrumb">
-            <span>Home</span> / <span class="active">User Management</span>
-          </div>
-        </div>
-
-        <p>You can view all of franchise here</p>
-
-      </div>
-
-      <!-- Table Card -->
-      <div class="table-card">
-
-        <!-- Table Top Bar (NOW INSIDE CARD) -->
-        <div class="table-header">
-          <h4>All Users</h4>
-
-          <div class="actions">
-            <div class="search-box">
-              <input type="text" placeholder="Search">
-              <span class="filter-icon">⚙️</span>
-            </div>
-
-            <%= link_to "Create New User", "#", class: "btn-primary" %>
-          </div>
-        </div>
-
-        <!-- Table -->
-        <table>
-          <thead>
-            <tr>
-              <th><input type="checkbox"></th>
-              <th>User Name</th>
-              <th>Email</th>
-              <th>Password</th>
-              <th>Franchise Name</th>
-              <th>Role Assign</th>
-              <th></th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <% @users.each_with_index do |user, index| %>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td>#<%= index + 1 %> <%= user.name %></td>
-                <td><%= user.email %></td>
-                <td>************</td>
-                <td><%= user.name %></td>
-                <td><%= user.role %></td>
-                <td class="actions">
-                  <%= link_to "✏️", "#", class: "edit-btn" %>
-                  <%= link_to "🗑️", "#", method: :delete, data: { confirm: "Are you sure?" }, class: "delete-btn" %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-
+      <div class="breadcrumb">
+        <span>Home</span> /
+        <span class="active">User Management</span>
       </div>
     </div>
+
+    <p>You can view all users here</p>
   </div>
+
+  <div class="table-card">
+
+    <div class="table-header">
+
+      <h4>All Users</h4>
+
+      <div class="actions">
+
+        <%= form_with url: admin_users_path,
+                      method: :get,
+                      local: true,
+                      class: "search-box" do |f| %>
+
+          <%= f.text_field :search,
+                           value: params[:search],
+                           placeholder: "Search by name, email or phone" %>
+
+          <%= f.submit "Search" %>
+
+        <% end %>
+
+        <%= link_to "Create New User",
+                    new_admin_user_path,
+                    class: "btn-primary" %>
+
+      </div>
+
+    </div>
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>
+            <input type="checkbox">
+          </th>
+
+          <th>User Name</th>
+
+          <th>Email</th>
+
+          <th>Phone</th>
+
+          <th>Gender</th>
+
+          <th>Role</th>
+
+          <th>Created At</th>
+
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <% if @users.any? %>
+
+          <% @users.each_with_index do |user, index| %>
+
+            <tr>
+
+              <td>
+                <input type="checkbox">
+              </td>
+
+              <td>
+                #<%= index + 1 %>
+                <%= user.name.presence || "N/A" %>
+              </td>
+
+              <td>
+                <%= user.email.presence || "N/A" %>
+              </td>
+
+              <td>
+                <%= user.country_code %>
+                <%= user.phone_number.presence || "N/A" %>
+              </td>
+
+              <td>
+                <%= user.gender.presence || "N/A" %>
+              </td>
+
+              <td>
+                <%= user.role.presence || "N/A" %>
+              </td>
+
+              <td>
+                <%= user.created_at.strftime("%d %b %Y") %>
+              </td>
+
+              <td class="actions">
+
+                <%= link_to "✏️",
+                            edit_admin_user_path(user),
+                            class: "edit-btn",
+                            title: "Edit User" %>
+
+                <%= button_to "🗑️",
+                              admin_user_path(user),
+                              method: :delete,
+                              class: "delete-btn",
+                              form: {
+                                data: {
+                                  turbo_confirm: "Are you sure you want to delete this user?"
+                                }
+                              },
+                              title: "Delete User" %>
+
+              </td>
+
+            </tr>
+
+          <% end %>
+
+        <% else %>
+
+          <tr>
+            <td colspan="8" style="text-align: center;">
+              No users found.
+            </td>
+          </tr>
+
+        <% end %>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+  </div>
+
 </div>

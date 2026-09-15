@@ -1,0 +1,108 @@
+<div class="user-form-page">
+
+  <div class="user-form-card">
+
+    <h1 class="user-form-title">
+      <%= user.persisted? ? "Edit User" : "Create New User" %>
+    </h1>
+
+    <%= form_with model: [:admin, user], local: true, class: "user-form" do |f| %>
+
+      <% if user.errors.any? %>
+        <div class="error-messages">
+          <h4>
+            <%= pluralize(user.errors.count, "error") %> prevented saving:
+          </h4>
+
+          <ul>
+            <% user.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= f.label :name, "User Name" %>
+        <%= f.text_field :name, required: true, placeholder: "Enter user name" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :email, "Email" %>
+        <%= f.email_field :email, required: true, placeholder: "Enter email address" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :country_code, "Country Code" %>
+        <%= f.text_field :country_code, placeholder: "+91" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :phone_number, "Phone Number" %>
+        <%= f.text_field :phone_number, placeholder: "Enter phone number" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :gender, "Gender" %>
+
+        <%= f.select :gender,
+          options_for_select(
+            [
+              ["Male", "male"],
+              ["Female", "female"],
+              ["Other", "other"]
+            ],
+            user.gender
+          ),
+          { include_blank: "Select Gender" } %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :date_of_birth, "Date of Birth" %>
+        <%= f.date_field :date_of_birth %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :emergency_contact, "Emergency Contact" %>
+        <%= f.text_field :emergency_contact, placeholder: "Enter emergency contact" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :role, "Role" %>
+
+        <%= f.select :role,
+          options_for_select(
+            [
+              ["User", "user"],
+              ["Merchant", "merchant"],
+              ["Admin", "admin"]
+            ],
+            user.role
+          ),
+          { include_blank: "Select Role" } %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password, "Password" %>
+        <%= f.password_field :password, placeholder: "Enter password" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password_confirmation, "Confirm Password" %>
+        <%= f.password_field :password_confirmation, placeholder: "Confirm password" %>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit user.persisted? ? "Update User" : "Create User",
+            class: "btn-primary" %>
+
+        <%= link_to "Cancel",
+            admin_users_path,
+            class: "btn-secondary" %>
+      </div>
+
+    <% end %>
+
+  </div>
+
+</div>
