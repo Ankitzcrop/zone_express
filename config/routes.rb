@@ -79,6 +79,9 @@ Rails.application.routes.draw do
           post :cancel
           post :reschedule
           get :tracking
+          get :refund_status
+          get :rating
+          post :submit_rating
         end
       end
     end
@@ -86,7 +89,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-
+      resources :faqs, only: [:index, :create]
       resources :delivery_types, only: [:create, :index]
       resources :promo_codes, only: [:create, :index]
 

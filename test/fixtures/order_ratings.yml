@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  order: one
+  user: one
+  stars: 1
+  comment: MyText
+
+two:
+  order: two
+  user: two
+  stars: 1
+  comment: MyText

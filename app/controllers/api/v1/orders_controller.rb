@@ -435,6 +435,119 @@ class Api::V1::OrdersController < ApplicationController
     }, status: :ok
   end
 
+  def refund_status
+    order = Order.find_by(id: params[:id])
+
+    unless order
+      return render json: {
+        success: false,
+        message: "Order not found"
+      }, status: :not_found
+    end
+
+    refund = order.refund
+
+    unless refund
+      return render json: {
+        success: true,
+        data: {
+          status: "none",
+          amount: 0.0,
+          currency: "INR",
+          refund_id: nil,
+          requested_at: nil,
+          completed_at: nil
+        }
+      }, status: :ok
+    end
+
+    render json: {
+      success: true,
+      data: {
+        status: refund.status,
+        amount: refund.amount.to_f,
+        currency: refund.currency,
+        refund_id: refund.refund_id,
+        requested_at: refund.requested_at,
+        completed_at: refund.completed_at
+      }
+    }, status: :ok
+  end
+
+  def submit_rating
+    order = Order.find_by(id: params[:id])
+
+    unless order
+      return render json: {
+        success: false,
+        message: "Order not found"
+      }, status: :not_found
+    end
+
+    user = ::User.find_by(id: params[:user_id])
+
+    unless user
+      return render json: {
+        success: false,
+        message: "User not found"
+      }, status: :not_found
+    end
+
+    rating = order.order_rating || order.build_order_rating
+
+    rating.user = user
+    rating.stars = params[:stars]
+    rating.comment = params[:comment]
+
+    if rating.save
+      render json: {
+        success: true,
+        message: "Thank you for rating your delivery!"
+      }, status: :ok
+    else
+      render json: {
+        success: false,
+        message: rating.errors.full_messages.join(", ")
+      }, status: :unprocessable_entity
+    end
+  end
+
+  def rating
+    order = Order.find_by(id: params[:id])
+
+    unless order
+      return render json: {
+        success: false,
+        message: "Order not found"
+      }, status: :not_found
+    end
+
+    rating = order.order_rating
+
+    unless rating
+      return render json: {
+        success: false,
+        message: "Rating not found for this order"
+      }, status: :not_found
+    end
+
+    user = ::User.find_by(id: rating.user_id)
+
+    render json: {
+      success: true,
+      message: "Order rating fetched successfully",
+      data: {
+        id: rating.id,
+        order_id: rating.order_id,
+        user_id: rating.user_id,
+        customer_name: user&.name,
+        stars: rating.stars,
+        comment: rating.comment,
+        created_at: rating.created_at
+      }
+    }, status: :ok
+  end
+
   private
    
   def mask_phone(phone)

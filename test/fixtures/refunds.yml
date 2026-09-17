@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  order: one
+  status: 1
+  amount: 9.99
+  currency: MyString
+  refund_id: MyString
+  requested_at: 2026-09-16 15:50:18
+  completed_at: 2026-09-16 15:50:18
+
+two:
+  order: two
+  status: 1
+  amount: 9.99
+  currency: MyString
+  refund_id: MyString
+  requested_at: 2026-09-16 15:50:18
+  completed_at: 2026-09-16 15:50:18

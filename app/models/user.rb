@@ -10,6 +10,7 @@ class User < ApplicationRecord
   has_many :orders, dependent: :destroy
   has_many :support_tickets, dependent: :destroy
   has_one :agent_profile, dependent: :destroy
+  has_many :order_ratings, dependent: :destroy
 
   enum :role, {
     user: 0,
