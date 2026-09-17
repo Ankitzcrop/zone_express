@@ -10,6 +10,8 @@ class Order < ApplicationRecord
   belongs_to :delivery_address, class_name: "Address", optional: true
   belongs_to :receiver, class_name: "User", optional: true
   has_many :order_trackings, dependent: :destroy
+  has_one :refund
+  has_one :order_rating, dependent: :destroy
   after_update :create_tracking_record, if: :saved_change_to_status?
   
   enum :status, {
