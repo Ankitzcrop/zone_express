@@ -22,6 +22,7 @@ class Api::V1::OrdersController < ApplicationController
     missing_fields = []
 
     missing_fields << "user_id" unless params[:user_id].present?
+    missing_fields << "service_id" unless params[:service_id].present?
     missing_fields << "pickup_address_id" unless params[:pickup_address_id].present?
     missing_fields << "delivery_address_id" unless params[:delivery_address_id].present?
 
@@ -34,6 +35,7 @@ class Api::V1::OrdersController < ApplicationController
 
     pickup_address = Address.find_by(id: params[:pickup_address_id])
     delivery_address = Address.find_by(id: params[:delivery_address_id])
+    service = Service.find_by(id: params[:service_id])
 
     unless pickup_address && delivery_address
       return render json: {
@@ -42,11 +44,19 @@ class Api::V1::OrdersController < ApplicationController
       }, status: :not_found
     end
 
+    unless service
+      return render json: {
+        success: false,
+        message: "Service not found"
+      }, status: :not_found
+    end
+
     distance = calculate_distance(pickup_address, delivery_address)
     driver_amount = calculate_driver_amount(distance)
 
     order = Order.new(
       user_id: params[:user_id],
+      service_id: params[:service_id],
       pickup_address_id: params[:pickup_address_id],
       delivery_address_id: params[:delivery_address_id],
       tracking_id: "ZX#{SecureRandom.hex(4).upcase}",
@@ -61,6 +71,7 @@ class Api::V1::OrdersController < ApplicationController
         message: "Order created successfully",
         order_id: order.id,
         tracking_id: order.tracking_id,
+        service_id: order.service_id,
         distance: order.distance,
         driver_amount: order.driver_amount
       }
@@ -75,7 +86,7 @@ class Api::V1::OrdersController < ApplicationController
   def my_orders
     user_id = params[:user_id]
 
-    # Base query (type ke hisaab se)
+    # Base query based on order type
     case params[:type]
     when "from_me"
       orders = Order.where(user_id: user_id)
@@ -86,9 +97,15 @@ class Api::V1::OrdersController < ApplicationController
     end
 
     # Category filter
-    if params[:category].present?
-      service = Service.find_by("LOWER(name) = ?", params[:category].downcase)
-      orders = orders.where(service_id: service.id) if service
+    category = params[:category].presence || "all"
+
+    unless category == "all"
+      service_ids = Service.where(
+        service_type: category,
+        active: true
+      ).pluck(:id)
+
+      orders = orders.where(service_id: service_ids)
     end
 
     render json: {
