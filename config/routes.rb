@@ -98,6 +98,41 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      post "devices/register", to: "devices#register"
+
+      get "notification_preferences",
+          to: "notification_preferences#show"
+
+      put "notification_preferences",
+          to: "notification_preferences#update"
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      get "serviceability", to: "serviceability#show"
+      get "delivery_types", to: "delivery_types#index"
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      namespace :admin do
+        resources :zones do
+          member do
+            patch :activate
+            patch :deactivate
+            get :change_logs
+          end
+        end
+      end
+
+      get "serviceability", to: "serviceability#show"
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
       resources :services, only: [:index, :create, :show, :update, :destroy]
       resources :support_tickets, only: [:index, :show, :create, :update, :destroy]
     end

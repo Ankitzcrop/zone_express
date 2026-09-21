@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  order_updates: false
+  promotions: false
+  push_enabled: false
+
+two:
+  user: two
+  order_updates: false
+  promotions: false
+  push_enabled: false

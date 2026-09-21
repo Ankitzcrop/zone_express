@@ -11,6 +11,8 @@ class User < ApplicationRecord
   has_many :support_tickets, dependent: :destroy
   has_one :agent_profile, dependent: :destroy
   has_many :order_ratings, dependent: :destroy
+  has_many :devices, dependent: :destroy
+  has_one :notification_preference, dependent: :destroy
 
   enum :role, {
     user: 0,
