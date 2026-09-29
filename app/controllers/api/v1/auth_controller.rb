@@ -2,21 +2,31 @@ class Api::V1::AuthController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def send_otp
-    user = User.find_or_create_by!(
+    user = User.find_or_initialize_by(
       phone_number: params[:phone_number],
       country_code: params[:country_code]
     )
 
+    user.name = params[:name] if params[:name].present?
+
+    if params[:password].present?
+      user.password = params[:password]
+      user.password_confirmation = params[:password_confirmation]
+    end
+
     otp = rand(100000..999999).to_s
 
-    user.update!(
-      otp: otp,
-      otp_sent_at: Time.current
-    )
+    user.otp = otp
+    user.otp_sent_at = Time.current
+
+    user.save!
 
     Rails.logger.info "OTP for #{user.phone_number}: #{otp}"
 
-    render json: { message: "OTP sent successfully" }, status: :ok
+    render json: {
+      success: true,
+      message: "OTP sent successfully"
+    }
   end
 
   def verify_otp

@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  has_secure_password
+  has_secure_password validations: false
   validates :phone_number, presence: true
   validates :country_code, presence: true
   validates :phone_number, uniqueness: {
