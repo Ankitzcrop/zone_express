@@ -27,7 +27,7 @@ class Api::V1::HomeController < ApplicationController
     {
       title: "Your World. Our Route.",
       subtitle: "18,000+ Pincodes",
-      image_url: "https://cdn.app.com/banner.png"
+      image_url: "#{request.base_url}/banner.jpeg"
     }
   end
 
